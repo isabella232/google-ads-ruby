@@ -1,0 +1,3 @@
+source "https://rubygems.org"
+
+gem "gapic-generator", git: "https://github.com/googleapis/gapic-generator-ruby"
