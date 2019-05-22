@@ -27,22 +27,6 @@ def add_campaigns(customer_id)
   # ENV['HOME']/google_ads_config.rb when called without parameters
   client = Google::Ads::GoogleAds::GoogleAdsClient.new
 
-  campaign_budget_operation = client.operation.create_resource.campaign_budget do |cb|
-    cb.name = client.wrapper.string(
-      "Interplanetary Budget #{(Time.new.to_f * 1000).to_i}",
-    )
-
-    cb.delivery_method = :STANDARD
-    cb.amount_micros = client.wrapper.int64(500000)
-  end
-
-  return_budget = client.service.campaign_budget.mutate_campaign_budgets(
-    customer_id,
-    [campaign_budget_operation]
-  )
-
-  campaign_budget_resource_name = return_budget.results.first.resource_name
-
   # Create campaign.
   campaign = client.resource.campaign
   campaign.name = client.wrapper.string(
@@ -54,12 +38,9 @@ def add_campaigns(customer_id)
   # the ads from immediately serving. Set to ENABLED once you've added
   # targeting and the ads are ready to serve.
   campaign.status = :PAUSED
+  campaign.campaign_budget = client.wrapper.string("customers/2513175074/campaignBudgets/2007291563")
 
   campaign.manual_cpc = client.resource.manual_cpc
-  campaign.campaign_budget = client.wrapper.string(
-    campaign_budget_resource_name,
-  )
-
   campaign.network_settings = client.resource.network_settings do |ns|
     ns.target_google_search = client.wrapper.bool(true)
     ns.target_search_network = client.wrapper.bool(true)
@@ -79,45 +60,45 @@ def add_campaigns(customer_id)
   )
   campaign_resource_name = response.results.first.resource_name
   puts "Created campaign #{campaign_resource_name}"
-
-  # when we fetch campaigns from the API, they have resource names populated,
-  # but because we just created this one, it isn't populated, so this will
-  # let us work with the campaign we just created as an updatable campaign
-  campaign.resource_name = campaign_resource_name
-
-  update_operation = client.operation.update_resource.campaign(campaign) do
-    campaign.name = client.wrapper.string(
-      "A different interplanetary Cruise #{(Time.new.to_f * 1000).to_i}",
-    )
-  end
-
-  campaign_service.mutate_campaigns(customer_id, [update_operation])
-
-  # Finally remove the campaign
-  remove_op = client.operation.remove_resource.campaign(campaign_resource_name)
-  campaign_service.mutate_campaigns(customer_id, [remove_op])
-
-  # updates also work with only a resource name, so let's pull one out and
-  # then update it
-  ga_service = client.service.google_ads
-  res = ga_service.search(
-    customer_id,
-    "select campaign.resource_name, campaign.name from campaign limit 1",
-  )
-
-  campaign_resource_name = res.first.campaign.resource_name
-
-  # note here, we have to pass the campaign (`camp`) as a block arg, because
-  # we only have a resource name. The field mask for the object is created
-  # and applied automatically to the new campaign instance based on what's set
-  # in the block.
-  update_operation = client.operation.update_resource.campaign(campaign_resource_name) do |camp|
-    camp.name = client.wrapper.string(
-      "A different interplanetary Cruise #{(Time.new.to_f * 1000).to_i}",
-    )
-  end
-
-  campaign_service.mutate_campaigns(customer_id, [update_operation])
+#
+#  # when we fetch campaigns from the API, they have resource names populated,
+#  # but because we just created this one, it isn't populated, so this will
+#  # let us work with the campaign we just created as an updatable campaign
+#  campaign.resource_name = campaign_resource_name
+#
+#  update_operation = client.operation.update_resource.campaign(campaign) do
+#    campaign.name = client.wrapper.string(
+#      "A different interplanetary Cruise #{(Time.new.to_f * 1000).to_i}",
+#    )
+#  end
+#
+#  campaign_service.mutate_campaigns(customer_id, [update_operation])
+#
+#  # Finally remove the campaign
+#  remove_op = client.operation.remove_resource.campaign(campaign_resource_name)
+#  campaign_service.mutate_campaigns(customer_id, [remove_op])
+#
+#  # updates also work with only a resource name, so let's pull one out and
+#  # then update it
+#  ga_service = client.service.google_ads
+#  res = ga_service.search(
+#    customer_id,
+#    "select campaign.resource_name, campaign.name from campaign limit 1",
+#  )
+#
+#  campaign_resource_name = res.first.campaign.resource_name
+#
+#  # note here, we have to pass the campaign (`camp`) as a block arg, because
+#  # we only have a resource name. The field mask for the object is created
+#  # and applied automatically to the new campaign instance based on what's set
+#  # in the block.
+#  update_operation = client.operation.update_resource.campaign(campaign_resource_name) do |camp|
+#    camp.name = client.wrapper.string(
+#      "A different interplanetary Cruise #{(Time.new.to_f * 1000).to_i}",
+#    )
+#  end
+#
+#  campaign_service.mutate_campaigns(customer_id, [update_operation])
 end
 
 if __FILE__ == $0
@@ -166,9 +147,5 @@ if __FILE__ == $0
         STDERR.printf("\tType: %s\n\tCode: %s\n", k, v)
       end
     end
-  rescue Google::Gax::RetryError => e
-    STDERR.printf("Error: '%s'\n\tCause: '%s'\n\tCode: %d\n\tDetails: '%s'\n" \
-                  "\tRequest-Id: '%s'\n", e.message, e.cause.message, e.cause.code,
-                  e.cause.details, e.cause.metadata['request-id'])
   end
 end

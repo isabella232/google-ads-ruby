@@ -14,3 +14,4 @@ gem 'standard'
 gem 'allocation_tracer'
 gem 'benchmark-ips'
 gem 'yard'
+gem 'google-gax', github: "googleapis/gax-ruby"

@@ -9,29 +9,31 @@ require 'google/protobuf/field_mask_pb'
 require 'google/protobuf/wrappers_pb'
 require 'google/rpc/status_pb'
 Google::Protobuf::DescriptorPool.generated_pool.build do
-  add_message "google.ads.googleads.v1.services.GetCampaignRequest" do
-    optional :resource_name, :string, 1
-  end
-  add_message "google.ads.googleads.v1.services.MutateCampaignsRequest" do
-    optional :customer_id, :string, 1
-    repeated :operations, :message, 2, "google.ads.googleads.v1.services.CampaignOperation"
-    optional :partial_failure, :bool, 3
-    optional :validate_only, :bool, 4
-  end
-  add_message "google.ads.googleads.v1.services.CampaignOperation" do
-    optional :update_mask, :message, 4, "google.protobuf.FieldMask"
-    oneof :operation do
-      optional :create, :message, 1, "google.ads.googleads.v1.resources.Campaign"
-      optional :update, :message, 2, "google.ads.googleads.v1.resources.Campaign"
-      optional :remove, :string, 3
+  add_file("google/ads/google_ads/v1/services/campaign_service.proto", :syntax => :proto3) do
+    add_message "google.ads.googleads.v1.services.GetCampaignRequest" do
+      optional :resource_name, :string, 1
     end
-  end
-  add_message "google.ads.googleads.v1.services.MutateCampaignsResponse" do
-    optional :partial_failure_error, :message, 3, "google.rpc.Status"
-    repeated :results, :message, 2, "google.ads.googleads.v1.services.MutateCampaignResult"
-  end
-  add_message "google.ads.googleads.v1.services.MutateCampaignResult" do
-    optional :resource_name, :string, 1
+    add_message "google.ads.googleads.v1.services.MutateCampaignsRequest" do
+      optional :customer_id, :string, 1
+      repeated :operations, :message, 2, "google.ads.googleads.v1.services.CampaignOperation"
+      optional :partial_failure, :bool, 3
+      optional :validate_only, :bool, 4
+    end
+    add_message "google.ads.googleads.v1.services.CampaignOperation" do
+      optional :update_mask, :message, 4, "google.protobuf.FieldMask"
+      oneof :operation do
+        optional :create, :message, 1, "google.ads.googleads.v1.resources.Campaign"
+        optional :update, :message, 2, "google.ads.googleads.v1.resources.Campaign"
+        optional :remove, :string, 3
+      end
+    end
+    add_message "google.ads.googleads.v1.services.MutateCampaignsResponse" do
+      optional :partial_failure_error, :message, 3, "google.rpc.Status"
+      repeated :results, :message, 2, "google.ads.googleads.v1.services.MutateCampaignResult"
+    end
+    add_message "google.ads.googleads.v1.services.MutateCampaignResult" do
+      optional :resource_name, :string, 1
+    end
   end
 end
 

@@ -56,7 +56,7 @@ def add_campaigns(customer_id)
   # Set the bidding strategy and budget.
   campaign.manual_cpc = client.resource(:ManualCpc)
   campaign.campaign_budget = client.wrapper.string(
-      return_budget.results.first.resource_name)
+    return_budget.results.first.resource_name.tap { |x| p x})
 
   # Set the campaign network options.
   campaign.network_settings = client.resource(:NetworkSettings)
