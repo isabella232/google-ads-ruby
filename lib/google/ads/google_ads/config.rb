@@ -34,6 +34,9 @@ module Google
         attr_accessor :log_target
         attr_accessor :logger
 
+        attr_accessor :treat_deprecation_warnings_as_errors
+        attr_accessor :warn_on_all_deprecations
+
         def initialize(&block)
           @refresh_token = nil
           @client_id = nil
@@ -48,6 +51,9 @@ module Google
           @log_level = nil
           @log_target = nil
           @logger = nil
+
+          @treat_deprecation_warnings_as_errors = false
+          @warn_on_all_deprecations = false
 
           yield self if block_given?
         end
