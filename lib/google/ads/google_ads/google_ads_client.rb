@@ -150,10 +150,6 @@ module Google
           GRPC::Core::Channel.new(target, channel_args, chan_creds)
         end
 
-        def patch_lro_headers(class_to_return, headers)
-          PatchLROHeaders.new(class_to_return, headers).call
-        end
-
         # Return a resource or common entity for the provided entity type. For
         # example, passing :Campaign will return an instantiated Campaign.
         #

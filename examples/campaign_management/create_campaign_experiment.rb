@@ -27,6 +27,22 @@ def create_campaign_experiment(customer_id, campaign_draft_resource_name)
   # ENV['HOME']/google_ads_config.rb when called without parameters
   client = Google::Ads::GoogleAds::GoogleAdsClient.new
 
+  query = <<~EOD
+   SELECT
+       campaign_experiment.resource_name
+   FROM
+      campaign_experiment
+   WHERE
+    campaign_experiment.status = 'ENABLED'
+   LIMIT
+      100
+  EOD
+
+  client.service.google_ads.search(customer_id, query).each do |row|
+    op = client.operation.remove_resource.campaign_experiment(row.campaign_experiment.resource_name)
+    client.service.campaign_experiment.mutate_campaign_experiments(customer_id, [op])
+  end
+
   experiment = client.resource.campaign_experiment do |ce|
     ce.campaign_draft = campaign_draft_resource_name
     ce.name = "Campaign Experiment ##{(Time.new.to_f * 1000).to_i}"
